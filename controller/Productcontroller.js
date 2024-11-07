@@ -5,6 +5,20 @@ exports.addProduct = (req, res) => {
     const product = req.body;
     const imageFiles = req.files;
 
+    if (!product.name) return res.status(400).json({ message: 'Product name is required' });
+    if (!product.mrp_rate) return res.status(400).json({ message: 'MRP rate is required' });
+    if (!product.technicians_rate) return res.status(400).json({ message: 'Technician rate is required' });
+    if (!product.distributors_rate) return res.status(400).json({ message: 'Distributor rate is required' });
+    if (!product.brand_name) return res.status(400).json({ message: 'Brand name is required' });
+    if (!product.product_description) return res.status(400).json({ message: 'Product description is required' });
+    if (!product.stocks) return res.status(400).json({ message: 'Stocks quantity is required' });
+    if (!product.how_to_use) return res.status(400).json({ message: 'How-to-use information is required' });
+    if (!product.composision) return res.status(400).json({ message: 'Composition information is required' });
+    if (!product.item_details) return res.status(400).json({ message: 'Item details are required' });    
+    
+    if (!imageFiles || imageFiles.length === 0) {
+        return res.status(400).json({ message: 'At least one image is required' });
+    }
     const newProduct = {
         name: product.name,
         mrp_rate: product.mrp_rate,
@@ -36,5 +50,30 @@ exports.getAllProducts = (req, res) => {
             return res.status(500).json({ message: 'Error fetching products', error: err });
         }
         res.status(200).json({ products });
+    });
+};
+
+// fetch products for admin product list table
+exports.getProducts = (req, res)=>{
+    Product.getProducts((err, products)=>{
+        if(err){
+            return res.status(500).json({message: "Error fetching products", error: err});
+        }
+        res.status(200).json({products});
+    })
+}
+
+// Fetch product for product detail page
+exports.getProductById = (req, res) => {
+    const productId = req.params.id;
+
+    Product.getProductById(productId, (err, product) => {
+        if (err) {
+            return res.status(500).json({ message: "Error fetching product detail", error: err });
+        }
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        res.status(200).json({ product });
     });
 };

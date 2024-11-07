@@ -5,7 +5,7 @@ const cors =require('cors');
 const path = require('path');
 const router = require('./routes/route');
 const db = require('./config/db');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5001;
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

@@ -44,7 +44,7 @@ const Product = {
         });
     },
 
-    //get all products with the first image and details
+    //get all products with the first image and details for product add to cart list page
     getAllProducts: (callback) => {
         const sql = `
             SELECT products.product_id, products.name, products.mrp_rate, products.brand_name, MIN(product_images.image_path) AS first_image
@@ -57,7 +57,48 @@ const Product = {
             if (err) return callback(err);
             callback(null, results);
         });
+    },
+
+    getProducts : (callback)=>{
+        const sql =`
+            SELECT products.product_id, products.name, products.mrp_rate, products.technicians_rate, products.distributors_rate , MIN(product_images.image_path) AS first_image
+            FROM products
+            LEFT JOIN product_images ON products.product_id = product_images.product_id
+            GROUP BY products.product_id
+        `;
+        db.query(sql, (err, results)=>{
+            if(err) return callback(err);
+            callback(null, results)
+        });
+    },
+
+    getProductById: (productId, callback) => {
+        const sql = `
+            SELECT 
+                p.product_id,
+                p.name,
+                p.mrp_rate,
+                p.product_description,
+                p.stocks,
+                p.how_to_use,
+                p.composision,
+                p.item_details,
+                GROUP_CONCAT(pi.image_path ORDER BY pi.id ASC SEPARATOR ',') AS images
+            FROM 
+                products p
+            LEFT JOIN 
+                product_images pi ON p.product_id = pi.product_id
+            WHERE 
+                p.product_id = ?
+            GROUP BY 
+                p.product_id;
+        `;
+        db.query(sql, [productId], (err, results) => {
+            if (err) return callback(err);
+            callback(null, results[0]);
+        });
     }
+
 };
 
 module.exports = Product;
