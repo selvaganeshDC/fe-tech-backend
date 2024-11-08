@@ -44,4 +44,17 @@ route.put('/updateDistributorById/:id', (req, res) => {
     });
 }); // update distributors details by id
 route.delete('/deleteDistributtorById/:id', deleteDistributor); // detele distributor by id
+
+const {addProductToCart} = require('../controller/Addtocartcontroller');
+route.post('/addtocart', addProductToCart);
+
+// Get user's cart
+// router.get('/user/:userId', addToCartController.getUserCart);
+
+// // Update cart item quantity
+// router.put('/update/:cartItemId', addToCartController.updateCartQuantity);
+
+// // Remove item from cart
+// router.delete('/remove/:cartItemId', addToCartController.removeFromCart);
+
 module.exports = route;

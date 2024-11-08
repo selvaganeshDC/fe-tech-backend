@@ -48,11 +48,18 @@ const Product = {
     //get all products with the first image and details for product add to cart list page
     getAllProducts: (callback) => {
         const sql = `
-            SELECT products.product_id, products.name, products.mrp_rate, products.brand_name, MIN(product_images.image_path) AS first_image
-            FROM products
-            LEFT JOIN product_images ON products.product_id = product_images.product_id
-            GROUP BY products.product_id
-        `;
+        SELECT 
+        products.id,
+        products.product_id, 
+        products.name, 
+        products.mrp_rate, 
+        products.brand_name, 
+        MIN(product_images.image_path) AS first_image
+        FROM products
+        LEFT JOIN product_images ON products.product_id = product_images.product_id
+        GROUP BY products.id, products.product_id, products.name, products.mrp_rate, products.brand_name
+`;
+
 
         db.query(sql, (err, results) => {
             if (err) return callback(err);
