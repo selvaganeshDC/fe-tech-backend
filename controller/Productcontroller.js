@@ -14,7 +14,8 @@ exports.addProduct = (req, res) => {
     if (!product.stocks) return res.status(400).json({ message: 'Stocks quantity is required' });
     if (!product.how_to_use) return res.status(400).json({ message: 'How-to-use information is required' });
     if (!product.composision) return res.status(400).json({ message: 'Composition information is required' });
-    if (!product.item_details) return res.status(400).json({ message: 'Item details are required' });    
+    if (!product.item_details) return res.status(400).json({ message: 'Item details are required' });
+    if (!product.organization_name) return res.status(400).json({ message: 'Organization name are required' });    
     
     if (!imageFiles || imageFiles.length === 0) {
         return res.status(400).json({ message: 'At least one image is required' });
@@ -30,6 +31,7 @@ exports.addProduct = (req, res) => {
         how_to_use: product.how_to_use,
         composision: product.composision,
         item_details: product.item_details,
+        organization_name: product.organization_name,
         images: imageFiles ? imageFiles.map(file => file.path) : []
     };
 
@@ -75,5 +77,14 @@ exports.getProductById = (req, res) => {
             return res.status(404).json({ message: "Product not found" });
         }
         res.status(200).json({ product });
+    });
+};
+
+exports.deleteProduct = (req, res) => {
+    const {id} = req.params;
+
+    Product.deleteProduct(id, (err, result) => {
+        if (err) return res.status(500).json({ error: 'Failed to delete product.' });
+        res.status(200).json({ message: 'Product deleted successfully' });
     });
 };

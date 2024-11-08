@@ -1,18 +1,19 @@
 const db = require('../config/db');
-
+const path = require('path');
+const fs = require('fs');
 const Product = {
     //add new product model
     addProduct: (product, callback) => {
         const productSql = `
             INSERT INTO products 
-            (name, mrp_rate, technicians_rate, distributors_rate, brand_name, product_description, stocks, how_to_use, composision, item_details) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (name, mrp_rate, technicians_rate, distributors_rate, brand_name, product_description, stocks, how_to_use, composision, item_details, organization_name) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const productValues = [
             product.name, product.mrp_rate, product.technicians_rate,
             product.distributors_rate, product.brand_name, product.product_description,
-            product.stocks, product.how_to_use, product.composision, product.item_details
+            product.stocks, product.how_to_use, product.composision, product.item_details, product.organization_name
         ];
 
         // Insert product details
@@ -61,7 +62,7 @@ const Product = {
 
     getProducts : (callback)=>{
         const sql =`
-            SELECT products.product_id, products.name, products.mrp_rate, products.technicians_rate, products.distributors_rate , MIN(product_images.image_path) AS first_image
+            SELECT products.product_id, products.name, products.organization_name, products.mrp_rate, products.technicians_rate, products.distributors_rate , MIN(product_images.image_path) AS first_image
             FROM products
             LEFT JOIN product_images ON products.product_id = product_images.product_id
             GROUP BY products.product_id
@@ -71,6 +72,8 @@ const Product = {
             callback(null, results)
         });
     },
+    // p means products table and pi means product_images table
+    //  get a particular product by id
 
     getProductById: (productId, callback) => {
         const sql = `
@@ -97,7 +100,55 @@ const Product = {
             if (err) return callback(err);
             callback(null, results[0]);
         });
+    },
+
+    deleteProduct: (productId, callback) => {
+        const formattedProductId = 'FE' + productId; 
+        // First, find all images associated with the product
+        const findImageSql = 'SELECT image_path FROM product_images WHERE product_id =?';
+        db.query(findImageSql, [formattedProductId], (err, result) => {
+            if (err) {
+                console.error("Error finding product images:", err);
+                return callback({ error: "Failed to find product images." });
+            }
+    
+            // If product images exist, delete them from the server
+            if (result.length > 0) {
+                result.forEach(imageRecord => {
+                    const oldImagePath = path.join(__dirname, '..', imageRecord.image_path);
+                    fs.unlink(oldImagePath, (unlinkErr) => {
+                        if (unlinkErr) {
+                            console.warn(`Failed to delete image ${imageRecord.image_path}:`, unlinkErr);
+                        } else {
+                            console.log(`Deleted image: ${imageRecord.image_path}`);
+                        }
+                    });
+                });
+            } else {
+                console.log("No images found for the product to delete.");
+            }
+    
+            // Now, delete the image records from the database
+            const deleteImagesSql = 'DELETE FROM product_images WHERE product_id = ?';
+            db.query(deleteImagesSql, [productId], (err) => {
+                if (err) {
+                    console.error("Error deleting product images from database:", err);
+                    return callback({ error: "Failed to delete product images from database." });
+                }
+    
+                // Now, delete the product record from the database
+                const deleteProductSql = 'DELETE FROM products WHERE id = ?';
+                db.query(deleteProductSql, [productId], (err, result) => {
+                    if (err) {
+                        console.error("Error deleting product from database:", err);
+                        return callback({ error: "Failed to delete product from database." });
+                    }
+                    callback(null, { message: 'Product and images deleted successfully' });
+                });
+            });
+        });
     }
+    
 
 };
 

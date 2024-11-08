@@ -22,11 +22,18 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-// Multer configuration
-const upload = multer({
+// Multer configuration for product images (up to 3 images)
+const uploadProductImages = multer({
     storage,
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
     fileFilter,
-}).array('images', 3); // Accept a maximum of 3 images
+}).array('images', 3); // Accept up to 3 images
 
-module.exports = upload;
+// Multer configuration for distributor image (1 image only)
+const uploadDistributorImage = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB file size limit
+    fileFilter,
+}).single('image'); // Accept only 1 image
+
+module.exports = { uploadProductImages, uploadDistributorImage };
