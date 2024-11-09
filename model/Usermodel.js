@@ -12,9 +12,9 @@ const User = {
         // Insert user details
         db.query(userSql, userValues, callback);
     },
-    findByEmail: (email, callback) => {
-        const sql = 'SELECT * FROM user WHERE email = ?';
-        db.query(sql, [email], (err, results) => {
+    findByUsername: (username, callback) => {
+        const sql = 'SELECT * FROM user WHERE username = ?';
+        db.query(sql, [username], (err, results) => {
             if (err) return callback(err);
             callback(null, results[0]); // Return the first result, if found
         });

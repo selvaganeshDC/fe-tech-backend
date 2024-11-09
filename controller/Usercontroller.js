@@ -30,12 +30,12 @@ exports.registerUser = (req, res) => {
 };
 
 exports.loginUser = (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email) return res.status(400).json({ message: 'Email is required' });
+    if (!username) return res.status(400).json({ message: 'Email is required' });
     if (!password) return res.status(400).json({ message: 'Password is required' });
 
-    User.findByEmail(email, (err, user) => {
+    User.findByUsername(username, (err, user) => {
         if (err) return res.status(500).json({ message: 'Server Error', error: err });
         if (!user) return res.status(404).json({ message: 'User not found' });
 
@@ -46,7 +46,9 @@ exports.loginUser = (req, res) => {
             const userData = {
                 user_id:user.id,
                 username:user.username,
-                useremail:user.email
+                useremail:user.email,
+                isAdmin:user.isAdmin,
+                isLogin : true
             }
             res.status(200).json({ message: 'Login successful', userData});
         });
