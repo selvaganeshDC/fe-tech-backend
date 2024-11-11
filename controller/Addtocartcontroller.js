@@ -20,13 +20,15 @@ exports.addProductToCart = (req, res) => {
 };
 
 
-// Get all items in the user's cart
 exports.getUserCart = (req, res) => {
-    const { userId } = req.params;
+    const { id } = req.params;
 
-    AddToCart.getUserCart(userId, (err, cartItems) => {
+    AddToCart.getUserCart(id, (err, cartItems) => {
         if (err) {
             return res.status(500).json({ error: "Failed to retrieve cart" });
+        }
+        if (cartItems.length === 0) {
+            return res.status(404).json({ message: "No items found in the cart" });
         }
         res.status(200).json({ cartItems });
     });
@@ -34,10 +36,14 @@ exports.getUserCart = (req, res) => {
 
 // Update the quantity of a cart item
 exports.updateCartQuantity = (req, res) => {
-    const { cartId } = req.params;
+    const { cartItemId } = req.params;
     const { quantity } = req.body;
 
-    AddToCart.updateCartQuantity(cartId, quantity, (err, result) => {
+    if (!quantity || quantity <= 0) {
+        return res.status(400).json({ error: "Invalid quantity" });
+    }
+
+    AddToCart.updateCartQuantity(cartItemId, quantity, (err, result) => {
         if (err) {
             return res.status(500).json({ error: "Failed to update cart quantity" });
         }
@@ -47,9 +53,9 @@ exports.updateCartQuantity = (req, res) => {
 
 // Remove an item from the cart
 exports.removeFromCart = (req, res) => {
-    const { cartId } = req.params;
+    const { cartItemId } = req.params;
 
-    AddToCart.removeFromCart(cartId, (err, result) => {
+    AddToCart.removeFromCart(cartItemId, (err, result) => {
         if (err) {
             return res.status(500).json({ error: "Failed to remove item from cart" });
         }

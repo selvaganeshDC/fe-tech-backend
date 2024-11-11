@@ -62,26 +62,22 @@ const AddToCart = {
                 product_images pi ON p.product_id = pi.product_id
             WHERE 
                 ac.user_id = ?
-            GROUP BY 
-                p.product_id
             ORDER BY 
-                pi.id ASC  -- Ensures the first image is selected
+                ac.cart_id ASC;
         `;
         db.query(sql, [userId], (err, results) => {
             if (err) {
                 console.error("Error fetching cart:", err);
                 return callback(err);
             }
-            callback(null, results); // Return cart items with first image for each product
+            callback(null, results); // Return cart items with images
         });
     },
 
-    // Update quantity of a specific cart item
-    updateCartQuantity: (cartId, quantity, callback) => {
-        const sql = `
-            UPDATE AddToCart SET quantity = ? WHERE cart_id = ?
-        `;
-        db.query(sql, [quantity, cartId], (err, result) => {
+    // Update the quantity of a cart item
+    updateCartQuantity: (cartItemId, quantity, callback) => {
+        const sql = `UPDATE AddToCart SET quantity = ? WHERE cart_id = ?`;
+        db.query(sql, [quantity, cartItemId], (err, result) => {
             if (err) {
                 console.error("Error updating cart quantity:", err);
                 return callback(err);
@@ -90,10 +86,10 @@ const AddToCart = {
         });
     },
 
-    // Remove a specific item from the cart
-    removeFromCart: (cartId, callback) => {
+    // Remove an item from the cart
+    removeFromCart: (cartItemId, callback) => {
         const sql = `DELETE FROM AddToCart WHERE cart_id = ?`;
-        db.query(sql, [cartId], (err, result) => {
+        db.query(sql, [cartItemId], (err, result) => {
             if (err) {
                 console.error("Error removing item from cart:", err);
                 return callback(err);
