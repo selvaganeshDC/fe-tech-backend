@@ -45,16 +45,21 @@ route.put('/updateDistributorById/:id', (req, res) => {
 }); // update distributors details by id
 route.delete('/deleteDistributtorById/:id', deleteDistributor); // detele distributor by id
 
-const {addProductToCart} = require('../controller/Addtocartcontroller');
+const {addProductToCart, getUserCart, updateCartQuantity, removeFromCart} = require('../controller/Addtocartcontroller');
 route.post('/addtocart', addProductToCart);
 
 // Get user's cart
-// router.get('/user/:userId', addToCartController.getUserCart);
+route.get('/user/:id', getUserCart);
 
-// // Update cart item quantity
-// router.put('/update/:cartItemId', addToCartController.updateCartQuantity);
+// Update cart item quantity
+route.put('/update/:id', updateCartQuantity);
 
-// // Remove item from cart
-// router.delete('/remove/:cartItemId', addToCartController.removeFromCart);
+// Remove item from cart
+route.delete('/remove/:id', removeFromCart);
+
+const{placeOrder} = require('../controller/Ordercontroller');
+
+//  Place order 
+route.post('/placeOrder', placeOrder);
 
 module.exports = route;
