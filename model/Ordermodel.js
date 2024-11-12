@@ -55,7 +55,68 @@ const Order = {
                 });
             });
         });
+    },
+
+    getAllOrders: (callback) => {
+        const ordersSql = `
+            SELECT 
+                o.order_id, o.user_id, o.order_date, o.total_amount, o.status, 
+                oi.product_id, oi.quantity, oi.price,
+                p.name AS product_name,
+                GROUP_CONCAT(pi.image_path ORDER BY pi.id ASC SEPARATOR ',') AS images
+            FROM 
+                Orders o
+            LEFT JOIN 
+                OrderItems oi ON o.order_id = oi.order_id
+            LEFT JOIN 
+                products p ON oi.product_id = p.product_id
+            LEFT JOIN 
+                product_images pi ON p.product_id = pi.product_id
+            GROUP BY 
+                o.order_id, oi.product_id
+            ORDER BY 
+                o.order_date DESC;
+        `;
+    
+        db.query(ordersSql, (err, results) => {
+            if (err) return callback(err);
+    
+            // Group items by order
+            const orders = results.reduce((acc, row) => {
+                const { 
+                    order_id, user_id, order_date, total_amount, status, 
+                    product_id, quantity, price, product_name, images 
+                } = row;
+    
+                if (!acc[order_id]) {
+                    acc[order_id] = {
+                        order_id,
+                        user_id,
+                        order_date,
+                        total_amount,
+                        status,
+                        items: []
+                    };
+                }
+    
+                // Push items with first image into the order
+                const firstImage = images ? images.split(',')[0] : null;
+                acc[order_id].items.push({ 
+                    product_id, 
+                    quantity, 
+                    price, 
+                    product_name, 
+                    firstImage 
+                });
+    
+                return acc;
+            }, {});
+    
+            // Convert object to array of orders
+            callback(null, Object.values(orders));
+        });
     }
+    
 };
 
 module.exports = Order;

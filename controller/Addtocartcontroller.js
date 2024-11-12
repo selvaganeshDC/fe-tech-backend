@@ -23,7 +23,7 @@ exports.addProductToCart = (req, res) => {
 exports.getUserCart = (req, res) => {
     const { id } = req.params;
 
-    AddToCart.getUserCart(id, (err, cartItems) => {
+    AddToCart.getUserCart(d, (err, cartItems) => {
         if (err) {
             return res.status(500).json({ error: "Failed to retrieve cart" });
         }

@@ -1,15 +1,14 @@
 const express = require('express');
 const route = express.Router();
 const {uploadDistributorImage, uploadProductImages} = require('../middlewares/multer');
-//User routes
 
+//User routes
 const {registerUser, loginUser} = require('../controller/Usercontroller');
 route.post('/registerUser', registerUser);
-route.post('/loginUser', loginUser)
+route.post('/loginUser', loginUser);
+
 //Product routes
 const { addProduct, getAllProducts, getProducts, getProductById, deleteProduct } = require('../controller/Productcontroller');
-
-
 route.post('/addProduct', (req, res) => {
     uploadProductImages(req, res, (err) => {
         if (err) {
@@ -22,9 +21,9 @@ route.get('/getAllProducts', getAllProducts); //Get all products
 route.get('/products', getProducts); // Get products for admin dashboard
 route.get('/productDetail/:id', getProductById); //Get product by id for product detail
 route.delete('/deleteProductById/:id', deleteProduct); // Delete product by ID
+
 // Distributors routes
 const {addDistributor, getAllDistributors, getDistributorById, deleteDistributor, updateDistributor } = require('../controller/Distributorscontroller');
-
 route.post('/addDistributor', (req, res)=>{
     uploadDistributorImage(req, res, (err)=>{
         if(err){
@@ -45,21 +44,24 @@ route.put('/updateDistributorById/:id', (req, res) => {
 }); // update distributors details by id
 route.delete('/deleteDistributtorById/:id', deleteDistributor); // detele distributor by id
 
+// cart routes
 const {addProductToCart, getUserCart, updateCartQuantity, removeFromCart} = require('../controller/Addtocartcontroller');
-route.post('/addtocart', addProductToCart);
+route.post('/addtocart', addProductToCart); // Add to cart products
+route.get('/user/:id', getUserCart); // Get user's cart
+route.put('/update/:id', updateCartQuantity); // Update cart item quantity
+route.delete('/remove/:id', removeFromCart); // Remove item from cart
 
-// Get user's cart
-route.get('/user/:id', getUserCart);
+//  Order routes 
+const{placeOrder, getAllOrders} = require('../controller/Ordercontroller');
+route.post('/placeOrder', placeOrder); //Place order
+route.get('/orders', getAllOrders); // Get all orders
 
-// Update cart item quantity
-route.put('/update/:id', updateCartQuantity);
-
-// Remove item from cart
-route.delete('/remove/:id', removeFromCart);
-
-const{placeOrder} = require('../controller/Ordercontroller');
-
-//  Place order 
-route.post('/placeOrder', placeOrder);
+// Transport routes 
+const {addTransport, getAllTransports, getTransportById,updateTransport, deleteTransport} = require('../controller/Transportcontroller');
+route.post('/addtransport', addTransport); // Add new transport
+route.get('/transport', getAllTransports); // Get all transports
+route.get('/transport/:id', getTransportById); // Get transport by for transport details
+route.put('/updatetransport/:id', updateTransport); // Update transport
+route.delete('/deletetransport/:id', deleteTransport); // Delete transport
 
 module.exports = route;

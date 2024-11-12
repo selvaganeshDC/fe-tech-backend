@@ -85,9 +85,17 @@ exports.getDistributorById = (req, res) => {
 // delete a specific distributor by ID
 exports.deleteDistributor = (req, res) => {
     const {id} = req.params;
-
-    Distributor.deleteDistributor(id, (err, result) => {
-        if (err) return res.status(500).json({ error: 'Failed to delete distributor.' });
-        res.status(200).json({ message: 'Distributor deleted successfully' });
+    Distributor.getDistributorById(id, (err, distributor) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error retrieving distributor.', details: err });
+        }
+        if (!distributor) {
+            return res.status(404).json({ error: 'Distributor not found.' });
+        }
+        Distributor.deleteDistributor(id, (err, result) => {
+            if (err) return res.status(500).json({ error: 'Failed to delete distributor.' });
+            res.status(200).json({ message: 'Distributor deleted successfully' });
+        });
     });
+    
 };

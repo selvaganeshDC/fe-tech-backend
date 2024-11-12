@@ -16,3 +16,13 @@ exports.placeOrder = (req, res) => {
         res.status(201).json(result);
     });
 };
+
+exports.getAllOrders = (req, res) => {
+    Order.getAllOrders((err, orders) => {
+        if (err) {
+            console.error('Error retrieving orders:', err);
+            return res.status(500).json({ message: 'Server Error', error: err });
+        }
+        res.status(200).json(orders);
+    });
+};
