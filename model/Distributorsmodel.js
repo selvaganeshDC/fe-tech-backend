@@ -35,7 +35,7 @@ const Distributor = {
     // Get all distributors with the image for listing
     getAllDistributors: (callback) => {
         const sql = `
-            SELECT distributors.id AS distributor_id, distributors.gstnumber, distributors.creditlimit, distributors.contact_person_name, distributors.phoneno, distributors.companyname, distributors.location, MIN(distributor_images.image_path) AS company_image
+            SELECT distributors.id AS distributor_id, distributors.gstnumber, distributors.emailid, distributors.creditlimit, distributors.contact_person_name, distributors.phoneno, distributors.companyname, distributors.location, MIN(distributor_images.image_path) AS company_image
             FROM distributors
             LEFT JOIN distributor_images ON distributors.id = distributor_images.distributor_id
             GROUP BY distributors.id

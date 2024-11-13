@@ -23,7 +23,7 @@ exports.addProductToCart = (req, res) => {
 exports.getUserCart = (req, res) => {
     const { id } = req.params;
 
-    AddToCart.getUserCart(d, (err, cartItems) => {
+    AddToCart.getUserCart(id, (err, cartItems) => {
         if (err) {
             return res.status(500).json({ error: "Failed to retrieve cart" });
         }
@@ -36,14 +36,17 @@ exports.getUserCart = (req, res) => {
 
 // Update the quantity of a cart item
 exports.updateCartQuantity = (req, res) => {
-    const { cartItemId } = req.params;
+    const { id } = req.params;
     const { quantity } = req.body;
 
     if (!quantity || quantity <= 0) {
         return res.status(400).json({ error: "Invalid quantity" });
     }
-
-    AddToCart.updateCartQuantity(cartItemId, quantity, (err, result) => {
+    if(!id){
+        return res.status(404).json({error:"Cart not found"});
+    }
+ 
+    AddToCart.updateCartQuantity(id, quantity, (err, result) => {
         if (err) {
             return res.status(500).json({ error: "Failed to update cart quantity" });
         }

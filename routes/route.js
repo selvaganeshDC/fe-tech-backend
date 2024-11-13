@@ -42,7 +42,7 @@ route.put('/updateDistributorById/:id', (req, res) => {
         updateDistributor(req, res);
     });
 }); // update distributors details by id
-route.delete('/deleteDistributtorById/:id', deleteDistributor); // detele distributor by id
+route.delete('/deleteDistributorById/:id', deleteDistributor); // detele distributor by id
 
 // cart routes
 const {addProductToCart, getUserCart, updateCartQuantity, removeFromCart} = require('../controller/Addtocartcontroller');
@@ -52,9 +52,14 @@ route.put('/update/:id', updateCartQuantity); // Update cart item quantity
 route.delete('/remove/:id', removeFromCart); // Remove item from cart
 
 //  Order routes 
-const{placeOrder, getAllOrders} = require('../controller/Ordercontroller');
+const{placeOrder, getAllOrders, getOrdersById} = require('../controller/Ordercontroller');
 route.post('/placeOrder', placeOrder); //Place order
 route.get('/orders', getAllOrders); // Get all orders
+route.get('/userOrdersById/:id',getOrdersById ) // Get orders based on user
+
+// Shipment routes
+const {getPendingShipments} = require('../controller/Shipmemtcontroller');
+route.get('/getShipments', getPendingShipments);
 
 // Transport routes 
 const {addTransport, getAllTransports, getTransportById,updateTransport, deleteTransport} = require('../controller/Transportcontroller');
