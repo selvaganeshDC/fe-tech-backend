@@ -58,8 +58,10 @@ route.get('/orders', getAllOrders); // Get all orders
 route.get('/userOrdersById/:id',getOrdersById ) // Get orders based on user
 
 // Shipment routes
-const {getPendingShipments} = require('../controller/Shipmemtcontroller');
-route.get('/getShipments', getPendingShipments);
+const { getAllShipments, getShipmentDetails, updateShipmentDetails} = require('../controller/Shipmemtcontroller');
+route.get('/getShipments', getAllShipments);
+route.get('/getShipment/:shipment_id', getShipmentDetails);
+route.put('/updateShipment/:shipment_id', updateShipmentDetails);
 
 // Transport routes 
 const {addTransport, getAllTransports, getTransportById,updateTransport, deleteTransport} = require('../controller/Transportcontroller');
