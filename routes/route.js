@@ -3,9 +3,11 @@ const route = express.Router();
 const {uploadDistributorImage, uploadProductImages} = require('../middlewares/multer');
 
 //User routes
-const {registerUser, loginUser} = require('../controller/Usercontroller');
+const {registerUser, loginUser, addOrUpdateUserProfile, getUserProfile} = require('../controller/Usercontroller');
 route.post('/registerUser', registerUser);
 route.post('/loginUser', loginUser);
+route.post('/user/profile', addOrUpdateUserProfile);
+route.get('/user/userprofile/:id', getUserProfile);
 
 //Product routes
 const { addProduct, getAllProducts, getProducts, getProductById, deleteProduct } = require('../controller/Productcontroller');
